@@ -50,6 +50,21 @@ const calculateRSI = (data, period = 14) => {
   return result;
 };
 
+const mergeCandles = (existing, incoming) => {
+  if (!incoming.length) return existing;
+
+  const cutoff = Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000);
+  const byTime = new Map();
+
+  [...existing, ...incoming].forEach((candle) => {
+    byTime.set(candle.time, candle);
+  });
+
+  return Array.from(byTime.values())
+    .filter((candle) => candle.time >= cutoff)
+    .sort((a, b) => a.time - b.time);
+};
+
 export default function App() {
   const [market, setMarket] = useState(null);
   const [klines, setKlines] = useState({ binance: [], coinbase: [], kraken: [] });
@@ -86,9 +101,9 @@ export default function App() {
       const incoming = JSON.parse(event.data);
       setMarket(incoming);
       setKlines((prev) => ({
-        binance: incoming.exchanges.binance.candles.length ? incoming.exchanges.binance.candles : prev.binance,
-        coinbase: incoming.exchanges.coinbase.candles.length ? incoming.exchanges.coinbase.candles : prev.coinbase,
-        kraken: incoming.exchanges.kraken.candles.length ? incoming.exchanges.kraken.candles : prev.kraken
+        binance: mergeCandles(prev.binance, incoming.exchanges.binance.candles),
+        coinbase: mergeCandles(prev.coinbase, incoming.exchanges.coinbase.candles),
+        kraken: mergeCandles(prev.kraken, incoming.exchanges.kraken.candles)
       }));
     };
 

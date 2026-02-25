@@ -1,0 +1,100 @@
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #e2e8f0;
+  background: #020617;
+}
+
+body {
+  margin: 0;
+  background: #020617;
+}
+
+.app {
+  padding: 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.toolbar input,
+.toolbar button {
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0.45rem 0.6rem;
+}
+
+.toolbar button.active {
+  border-color: #38bdf8;
+}
+
+.market-cards {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.market-cards article {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.chart-shell {
+  margin-top: 1rem;
+  position: relative;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chart-root {
+  min-height: 580px;
+}
+
+.pane {
+  width: 100%;
+}
+
+.draw-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.spread-panel {
+  margin-top: 1rem;
+  background: #0f172a;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  padding: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 0.5rem;
+  }
+
+  .chart-root {
+    min-height: 480px;
+  }
+
+  h1 {
+    font-size: 1.15rem;
+  }
+}

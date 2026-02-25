@@ -50,13 +50,17 @@ const calculateRSI = (data, period = 14) => {
   return result;
 };
 
+const normalizeCandles = (candles) => (Array.isArray(candles) ? candles : []);
+
 const mergeCandles = (existing, incoming) => {
-  if (!incoming.length) return existing;
+  const safeExisting = normalizeCandles(existing);
+  const safeIncoming = normalizeCandles(incoming);
+  if (!safeIncoming.length) return safeExisting;
 
   const cutoff = Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000);
   const byTime = new Map();
 
-  [...existing, ...incoming].forEach((candle) => {
+  [...safeExisting, ...safeIncoming].forEach((candle) => {
     byTime.set(candle.time, candle);
   });
 
@@ -90,7 +94,11 @@ export default function App() {
         fetch('/api/market/klines?exchange=kraken').then((r) => r.json()),
         fetch('/api/market/latest').then((r) => r.json())
       ]);
-      setKlines({ binance: b.candles, coinbase: c.candles, kraken: k.candles });
+      setKlines((prev) => ({
+        binance: mergeCandles(prev.binance, b.candles),
+        coinbase: mergeCandles(prev.coinbase, c.candles),
+        kraken: mergeCandles(prev.kraken, k.candles)
+      }));
       setMarket(latest.latest);
     };
 
@@ -101,9 +109,9 @@ export default function App() {
       const incoming = JSON.parse(event.data);
       setMarket(incoming);
       setKlines((prev) => ({
-        binance: mergeCandles(prev.binance, incoming.exchanges.binance.candles),
-        coinbase: mergeCandles(prev.coinbase, incoming.exchanges.coinbase.candles),
-        kraken: mergeCandles(prev.kraken, incoming.exchanges.kraken.candles)
+        binance: mergeCandles(prev.binance, incoming.exchanges?.binance?.candles),
+        coinbase: mergeCandles(prev.coinbase, incoming.exchanges?.coinbase?.candles),
+        kraken: mergeCandles(prev.kraken, incoming.exchanges?.kraken?.candles)
       }));
     };
 
